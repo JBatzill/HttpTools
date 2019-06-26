@@ -32,12 +32,12 @@
     },
     {
       "Name": "File",
-      "LogFolder": "D:/tmp/whatever/httpServer/",
+      "LogFolder": "tmp/whatever/httpServer/",
       "FileName": "logfile.log"
     },
     {
       "Name": "Operation",
-      "LogFolder": "D:/tmp/whatever/httpServer/operation"
+      "LogFolder": "tmp/whatever/httpServer/operation"
     }
   ],
   "Operations": [

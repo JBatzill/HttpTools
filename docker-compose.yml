@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  server:
+    image: ${DOCKER_REGISTRY-}httptoolsserver
+    build:
+      context: .\Server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:10000"
+      - "8081:10009"
