@@ -27,7 +27,7 @@ namespace Batzill.Server.Core.SSLBindingHelper
         /// </summary>
         private const string NetShDeleteFailedFileNotFound = "The system cannot find the file specified";
 
-        private const int NetshIdleTimeoutInMs = 2000;
+        private const int NetshIdleTimeoutInMs = 5000;
         
         public string DefaultEndpointHost
         {
