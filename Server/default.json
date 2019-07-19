@@ -7,10 +7,10 @@
         "Port": 10000
       },
       {
-        "HostName": "127.0.0.1",
+        "HostName": "+",
         "Protocol": "HTTPS",
         "Port": 10009,
-        "CertificateThumbPrint": "f470bb367af86a64e14dedf4fd77c47f210756b4"
+        "CertificateThumbPrint": "5A5518FA04EACE867162A694D0171BD0E9C30843"
       }
     ],
     "IdleTimeout": 300,
