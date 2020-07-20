@@ -74,9 +74,7 @@ namespace Batzill.Server.Core.Operations
                 throw new InternalServerErrorException();
             }
 
-            Client client = ClientLoginOperation.ClientMappings[clientIp];
-
-            if(client == null)
+            if(!ClientLoginOperation.ClientMappings.TryGetValue(clientIp, out Client client))
             {
                 this.logger?.Log(EventType.OperationAuthenticationError, "Unknown client: '{0}'.", clientIp);
 

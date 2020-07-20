@@ -33,8 +33,6 @@ namespace Batzill.Server
 
         private Semaphore semaphore;
 
-        private bool httpKeepAlive;
-
         public HttpClientServer(Logger logger, IOperationFactory operationFactory, IAuthenticationManager authManager, HttpServerSettings settings, ISSLBindingHelper sslBindingHelper)
             : base(logger, operationFactory, authManager)
         {
@@ -69,7 +67,6 @@ namespace Batzill.Server
 
         private void ListenerCallback(IAsyncResult result)
         {
-            HttpListener listener = (HttpListener)result.AsyncState;
             HttpListenerContext httpListenerContext = (result.AsyncState as HttpListener).EndGetContext(result);
 
             // realease semaphore after ending getcontext operation and before proceeding with request
@@ -147,6 +144,7 @@ namespace Batzill.Server
             /* ConnectionLimit */
             /* (server got stopped before settings update, save to reinitialize the semaphore.) */
             this.semaphore = new Semaphore(settings.Core.ConnectionLimit, settings.Core.ConnectionLimit);
+            ServicePointManager.DefaultConnectionLimit = settings.Core.ConnectionLimit;
 
             this.logger?.Log(EventType.ServerSetup, "Set ConnectionLimit to '{0}'.", settings.Core.ConnectionLimit);
         }

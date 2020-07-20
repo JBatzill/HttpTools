@@ -86,13 +86,13 @@ namespace Batzill.Server.Core.Operations
                     case StreamLogsOperation.InputParameterType:
                         filters.Add((log) =>
                         {
-                            return log is OperationLog && Regex.IsMatch((log as OperationLog).EventType.ToString(), parameters[parameter], RegexOptions.IgnoreCase);
+                            return log != null && Regex.IsMatch(log.EventType.ToString(), parameters[parameter], RegexOptions.IgnoreCase);
                         });
                         break;
                     case StreamLogsOperation.InputParameterMessage:
                         filters.Add((log) =>
                         {
-                            return log is OperationLog && Regex.IsMatch((log as OperationLog).Message.ToString(), parameters[parameter], RegexOptions.IgnoreCase);
+                            return log != null && log.ExtendedData.Any(x => x != null && Regex.IsMatch(x, parameters[parameter], RegexOptions.IgnoreCase));
                         });
                         break;
                     default:

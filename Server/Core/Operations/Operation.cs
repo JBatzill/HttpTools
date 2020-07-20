@@ -119,7 +119,7 @@ namespace Batzill.Server.Core
                 {
                     this.logger?.Log(EventType.OperationAuthenticationError, "No valid access token passed.");
 
-                    throw new UnauthorizedException("Authentication required! Please authenticate at '/auth?username={USERNAME}&key={KEY}'.");
+                    throw new UnauthorizedException("Authentication required! Please authenticate at '/auth/user?username={USERNAME}&key={KEY}'.");
                 }
 
                 this.logger?.Log(EventType.OperationAuthentication, "Authentication was successful.");

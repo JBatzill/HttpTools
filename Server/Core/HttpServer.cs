@@ -15,12 +15,9 @@ namespace Batzill.Server.Core
             get;
         }
 
-        private TaskFactory taskfactory;
         private IOperationFactory operationFactory;
         private IAuthenticationManager authManager;
 
-        private Task mainTask;
-        private int maxConcurrentConnections;
         private bool correctConfigured = false;
 
         protected Logger logger;
@@ -162,6 +159,15 @@ namespace Batzill.Server.Core
                 context.Request.ProtocolVersion,
                 operationId);
 
+            this.logger?.Log(
+                EventType.ConnectionInformation,
+                "(OperationId: {0}) Remote: {1}:{2} Local: {3}:{4}",
+                operationId,
+                context.Request.RemoteEndpoint.Address,
+                context.Request.RemoteEndpoint.Port,
+                context.Request.LocalEndpoint.Address,
+                context.Request.LocalEndpoint.Port);
+
             /* 
              * Inner try catches OperationException (might get rethrown)
              * Outer try catches All.
@@ -176,13 +182,13 @@ namespace Batzill.Server.Core
                 {
                     this.ProcessRequest(operationId, context);
 
-                    this.logger?.Log(EventType.SystemInformation, "Operation '{0}' finished successfully.", operationId);
+                    this.logger?.Log(EventType.SystemInformation, "(OperationId: {0}) Operation finished successfully.", operationId);
                 }
                 catch (OperationException ex)
                 {
                     this.logger?.Log(
                         EventType.SystemError,
-                        "Operation '{0}' failed with an operation exception. StatusCode: '{1}', StatusDescription: '{2}', Message: '{3}'. Exception: '{4}'.",
+                        "(OperationId: {0}) Operation failed with an operation exception. StatusCode: '{1}', StatusDescription: '{2}', Message: '{3}'. Exception: '{4}'.",
                         operationId,
                         ex.StatusCode,
                         ex.StatusDescription,
@@ -193,11 +199,11 @@ namespace Batzill.Server.Core
                     {
                         context.Response.Reset();
 
+                        this.ApplySettingsToRequest(context);
+
                         context.Response.StatusCode = ex.StatusCode;
                         context.Response.StatusDescription = ex.StatusDescription;
                         context.Response.WriteContent(ex.Message);
-
-                        this.ApplySettingsToRequest(context);
                     }
                     else
                     {
@@ -207,22 +213,23 @@ namespace Batzill.Server.Core
             }
             catch (Exception ex)
             {
-                this.logger?.Log(EventType.SystemError, "Error executing operation '{0}': {1}", operationId, ex);
+                this.logger?.Log(EventType.SystemError, "(OperationId: {0}) Error executing operation: {1}", operationId, ex);
 
                 context.Response.Reset();
+
+                this.ApplySettingsToRequest(context);
 
                 context.Response.StatusCode = 500;
                 context.Response.StatusDescription = "Internal Server Error";
                 context.Response.WriteContent("500 - Internal Server Error occured.");
 
-                this.ApplySettingsToRequest(context);
 
             }
             finally
             {
                 try
                 {
-                    this.logger?.Log(EventType.SystemInformation, "Do a final header sync, stream flush and close the connection.");
+                    this.logger?.Log(EventType.SystemInformation, "(OperationId: {0}) Do a final header sync, stream flush and close the connection.", operationId);
 
                     if (context.SyncAllowed)
                     {
@@ -238,7 +245,7 @@ namespace Batzill.Server.Core
                 }
                 catch (Exception ex)
                 {
-                    this.logger?.Log(EventType.SystemError, "Error finishing up operation '{0}': {1}", operationId, ex);
+                    this.logger?.Log(EventType.SystemError, "(OperationId: {0}) Error finishing up operation: {1}", operationId, ex);
                 }
             }
         }
@@ -250,14 +257,14 @@ namespace Batzill.Server.Core
 
         private void ProcessRequest(string operationId, HttpContext context)
         {
-            this.logger?.Log(EventType.OperationLoading, "Find matching operation for request");
+            this.logger?.Log(EventType.OperationLoading, "(OperationId: {0}) Find matching operation for request.", operationId);
 
             // create matching operation
             Operation operation = this.operationFactory.CreateMatchingOperation(context);
 
             if(operation == null)
             {
-                this.logger?.Log(EventType.OperationLoadingError, "No matching operation was found for Url '{0}'.", context.Request.Url);
+                this.logger?.Log(EventType.OperationLoadingError, "(OperationId: {0}) No matching operation was found for Url '{1}'.", operationId, context.Request.Url);
 
                 context.Response.SetDefaultValues();
                 context.Response.StatusCode = 404;

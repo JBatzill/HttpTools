@@ -40,6 +40,7 @@ namespace Batzill.Server.Core.Logging
         ServerSetup = 0x1100002,
         OperationLoading = 0x1100003,
         OperationClassInitalization = 0x1100004,
+        ConnectionInformation = 0x1100005,
 
         // Class for up to 0x12fffff
         SytemWarning = 0x1200000,
