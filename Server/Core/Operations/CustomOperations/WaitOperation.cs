@@ -5,8 +5,6 @@ using Batzill.Server.Core.Authentication;
 using Batzill.Server.Core.Exceptions;
 using Batzill.Server.Core.Logging;
 using Batzill.Server.Core.ObjectModel;
-using Batzill.Server.Core.Settings;
-using Batzill.Server.Core.Settings.Custom.Operations;
 
 namespace Batzill.Server.Core.Operations
 {
@@ -23,6 +21,7 @@ namespace Batzill.Server.Core.Operations
         protected override void ExecuteInternal(HttpContext context, IAuthenticationManager authManager)
         {
             context.Response.SetDefaultValues();
+            context.Response.SetHeaderValue("RemoteEndpointIp", context.Request.RemoteEndpoint.Address.ToString());
 
             this.logger?.Log(EventType.OperationInformation, "Got request to wait, try parsing seconds passed by client.");
 

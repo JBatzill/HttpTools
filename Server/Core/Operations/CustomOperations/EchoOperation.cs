@@ -18,6 +18,7 @@ namespace Batzill.Server.Core.Operations
         protected override void ExecuteInternal(HttpContext context, IAuthenticationManager authManager)
         {
             context.Response.SetDefaultValues();
+            context.Response.SetHeaderValue("RemoteEndpointIp", context.Request.RemoteEndpoint.Address.ToString());
 
             // Create response content
             StringBuilder ss = new StringBuilder();
